@@ -37,10 +37,8 @@ def get_each_failed_test_coverage_inf(failed_coverage_path, funs, production_nam
             for tem in productFuns[sfun[0]]:
                 if tem not in funs_tem:
                     funs_tem[tem] = sfun[1]
-                    # funs_tem.append([tem, sfun[1]])
         else:
             funs_tem[sfun[0]] = sfun[1]
-            # funs_tem.append([sfun[0], sfun[1]])
     out = {}
     for cf in current_coverage_file_list:
         # #read coverage file
@@ -51,15 +49,6 @@ def get_each_failed_test_coverage_inf(failed_coverage_path, funs, production_nam
             tree = ET.parse(coverage_file)
             root = tree.getroot()
             project = root.find("project")
-            # package = project.find("package")
-            #lines = files.find("line")
-            #for package in project:
-            #if mutated_project_name == "_MultipleBugs_.NOB_1.ID_2":
-            # for key1, value1 in files.attrib.items():
-                #print("tem:", tem)
-
-                #print("current:", key1, value1)
-                #print("methods_tem", methods_tem)
             start = False
             grade = -1
             for package in project:
@@ -68,15 +57,9 @@ def get_each_failed_test_coverage_inf(failed_coverage_path, funs, production_nam
                         if line.tag == "line":
                             if line.attrib.get("signature") != None:
                                 hn = line.attrib.get("signature").split('(')
-                                # if mutated_project_name == "_MultipleBugs_.NOB_1.ID_78":
-                                #     if hn[0] == "test":
-                                #         print("this is funs:", hn[0])
                                 if len(hn) > 0 and hn[0] in funs_tem:
-                                    # print(hn[0], type(line.attrib), line.attrib.get("count"),
-                                    #       type(line.attrib.get("count")))
                                     start = True
                                     grade = funs_tem[hn[0]]
-                                    # out.append(hn[0])
                                 else:
                                     start = False
                                     grade = -1
@@ -85,6 +68,7 @@ def get_each_failed_test_coverage_inf(failed_coverage_path, funs, production_nam
                                 if line.attrib.get("truecount") != "0":
                                     num = line.attrib.get("num")
                                     if num not in out and grade != -1:
+                                        #Setting the incremental value of a statement in the same block as a suspicious value
                                         grade += 0.001
                                         out[num] = grade
                                 elif line.attrib.get("count") != "0":
@@ -97,9 +81,3 @@ def get_each_failed_test_coverage_inf(failed_coverage_path, funs, production_nam
     spectrum_fail_coverage_file = join_path(get_outer_dir(failed_coverage_path), "spectrum_failed_coverage.xml")
     data = get_spectrum_failed_coverage_inf(spectrum_fail_coverage_file, out, production_name)
     return data
-
-def get_gouzao_fun_name(failed_coverage_path):
-    failed_production_path = join_path(failed_coverage_path, "src")
-
-def get_unit_test_imformation():
-    pass

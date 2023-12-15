@@ -3,6 +3,10 @@ import shutil
 
 from util.FileManager import join_path, list_dir
 
+'''
+This script is used to copy config.report.csv.done to config.report.csv.
+It can't be processed on Linux systems.
+'''
 
 def copy_file(folder_path):
     list_bug_dir = list_dir(folder_path)

@@ -7,7 +7,7 @@ from scipy import stats
 from scipy.stats.mstats import gmean
 import numpy
 
-from dsEvfusion import mul_evd_fusion, evd_fusion_with_FCLA_and_FCFLA, softmax
+from dsEvfusion import mul_evd_fusion, evd_fusion_with_SBFL_and_FCFLA, softmax
 from util.FileManager import join_path, \
     get_test_coverage_dir, get_variant_dir, \
     get_variants_dir, get_all_variant_dirs, list_dir, get_spectrum_failed_coverage_file_name_with_version, \
@@ -36,7 +36,6 @@ def get_set_of_stms_withScore(dict_of_stm_per_variant):
     for variant in dict_of_stm_per_variant:
         for stm in dict_of_stm_per_variant[variant]:
             if stm not in stm_set:
-                # print("ssssssttttttttmmmmmm:", dict_of_stm_per_variant[variant][stm])
                 stm_set[stm] = dict_of_stm_per_variant[variant][stm]["num_interactions"][1]
     return stm_set
 
@@ -68,7 +67,7 @@ def global_ranking_a_suspicious_list(all_stms_of_the_system, all_stms_in_failing
     if aggregation_type == AGGREGATION_ARITHMETIC_MEAN:
         ranked_list = global_score_aggregation_arithmetic_mean(all_stms_of_the_system, normalized_score_list,
                                                                variant_level_suspiciousness,
-                                                               spectrum_expression, suspicious_stms_list, isFCFLA, alpha)         #kkk
+                                                               spectrum_expression, suspicious_stms_list, isFCFLA, alpha)
         return ranked_list
     elif aggregation_type == AGGREGATION_GEOMETRIC_MEAN:
         ranked_list = global_score_aggregation_geometric_mean(all_stms_of_the_system, normalized_score_list,
@@ -898,12 +897,10 @@ def fcfla_ranking(statements_infor, variant_level_suspiciousness, spectrum_expre
     for (key, value) in statements_infor.items():
         score_tmp = alpha * statements_infor[key][score_type] + (1 - alpha) * variant_level_suspiciousness[key][
             spectrum_expression + VARIANT_LEVEL_SUSPICIOUSNESS_SCORE]
-        # ranked_list[key] = score_tmp
         fusion_a[key] = score_tmp
         fusion_b[key] = suspicious_stms_withscore[key]
 
-    new_fusion = evd_fusion_with_FCLA_and_FCFLA(list(fusion_a.values()), softmax(list(fusion_b.values())))
-    # print("new_fusion: ", sorted(new_fusion, reverse=True))
+    new_fusion = evd_fusion_with_SBFL_and_FCFLA(list(fusion_a.values()), softmax(list(fusion_b.values())))
     index = 0
     for (key, value) in fusion_a.items():
         ranked_list.append((key, new_fusion[index], statements_infor[key][NUM_OF_PASSING_VARIANTS]))

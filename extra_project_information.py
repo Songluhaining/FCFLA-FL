@@ -6,8 +6,7 @@ import pandas as pd
 
 from dsEvfusion import fusion, softmax, mul_evd_fusion
 from extra_test_information import extra_javafile_information
-from get_fail_coverage_information import get_each_failed_test_coverage_inf, get_gouzao_fun_name, \
-    get_unit_test_imformation
+from get_fail_coverage_information import get_each_failed_test_coverage_inf
 from methods.mutual_information import su_calculation
 from util.FileManager import join_path, list_dir
 import json
@@ -15,16 +14,13 @@ import json
 
 
 def get_Evidence1(variants_list, product_with_roles, config_report_csv, variants_list_path, times):
-
-
-    each_x_number = {}  #
+    each_x_number = {}
     each_x_pass = {}
     each_x_fail = {}
     product_len = 0
     pass_pro = 0
     fail_pro = 0
     sps_funs_keys = []
-
     funstion_role_csv = []
     result_list = []
 
@@ -64,23 +60,19 @@ def get_Evidence1(variants_list, product_with_roles, config_report_csv, variants
                 product_with_roles[product] = role_with_feature
             tem = config_report_csv.loc[config_report_csv['Product\Feature'] == str(product), '__TEST_OUTPUT__'].iloc[0]
             for i in range(0, len(ll)):
-                # if ll[i] not in each_role_funs:
                 each_role_funs.append(ll[i])
                 if ll[i] in each_x_number:
                     each_x_number[ll[i]] = each_x_number[ll[i]] + 1
                 else:
                     each_x_number[ll[i]] = 1
-
                 if ll[i] in each_x_pass and tem == "__PASSED__":
                     each_x_pass[ll[i]] = each_x_pass[ll[i]] + 1
                 elif ll[i] not in each_x_pass and tem == "__PASSED__":
                     each_x_pass[ll[i]] = 1
-
                 if ll[i] in each_x_fail and tem == "__FAILED__":
                     each_x_fail[ll[i]] = each_x_fail[ll[i]] + 1
                 elif ll[i] not in each_x_fail and tem == "__FAILED__":
                     each_x_fail[ll[i]] = 1
-
             funstion_role_csv.append(each_role_funs)
 
             if tem in each_x_number:
@@ -96,9 +88,7 @@ def get_Evidence1(variants_list, product_with_roles, config_report_csv, variants
         finally:
             mata_file.close()
 
-    pass_len = pass_pro
     pass_pro = pass_pro / product_len
-    fail_len = fail_pro
     fail_pro = fail_pro / product_len
 
     each_x_pro = {}
@@ -110,15 +100,14 @@ def get_Evidence1(variants_list, product_with_roles, config_report_csv, variants
 
     for key, value in each_x_number.items():
         if key != "__PASSED__" and key != "__FAILED__":
-            each_x_pro[key] = value / product_len  # each_x_number.get(__PASSED__)
+            each_x_pro[key] = value / product_len
             if key in each_x_pass:
-                # each_x_pass[key] = each_x_pass[key] / product_len
-                each_x_front_pass[key] = each_x_pass[key] / value  # each_x_pass[key] / each_x_pro[key]
+                each_x_front_pass[key] = each_x_pass[key] / value
                 each_x_rear_pass[key] = (each_x_front_pass[key] * each_x_pro[key]) / pass_pro
             if key in each_x_fail:
                 each_x_front_fail[key] = (each_x_fail[key] / value)
                 each_x_rear_fail[key] = 0.5 * ((each_x_front_fail[key] * each_x_pro[key]) / fail_pro) + 0.5 * \
-                                        each_x_front_fail[key]  # (each_x_front_fail[key]*each_x_pro[key]) / fail_pro
+                                        each_x_front_fail[key]
             else:
                 each_x_fail[key] = 0
 
@@ -146,13 +135,11 @@ def get_Evidence2(folder_path, mutated_project_name, variants_list_path):
         test_src_files = {}
         for cf in current_coverage_file_list:
             s_cf = cf.split(".")
-            no = s_cf[-3]  # .split("test")[1]
-            # test_class_name = s_cf[1]
+            no = s_cf[-3]
             tem_s_cf = s_cf[0: -3]
             src_file_path = ""
             for st in tem_s_cf:
                 src_file_path = src_file_path + "." + str(st)
-            # src_file_path = ' '.join() #+ "." + str(s_cf[1])
             if src_file_path not in test_src_files:
                 test_src_files[src_file_path] = []
                 test_src_files[src_file_path].append(no)
@@ -160,7 +147,6 @@ def get_Evidence2(folder_path, mutated_project_name, variants_list_path):
                 test_src_files[src_file_path].append(no)
 
         for kk, vv in test_src_files.items():
-            test_file = ""
             unit_test_file_path = join_path(failed_production_path, "test")
             sp_path = kk.split(".")
             if len(sp_path) > 1:
@@ -184,9 +170,9 @@ def uncertain_inference(buggy_systems_folder):
     type_1 = 0
     times = 0
     product_with_roles = {}
+    print("***********************************************")
+    print("Start calculating the suspiciousness of suspicious blocks and generating suspicious statements!")
     for mutated_project_name in mutated_projects:
-        print("********************************")
-        print("current mutated_project_name", mutated_project_name)
         folder_path = join_path(buggy_systems_folder, mutated_project_name)
         config_csv = join_path(folder_path, "config.report.csv")
         config_report_csv = pd.read_csv(config_csv)
@@ -201,13 +187,11 @@ def uncertain_inference(buggy_systems_folder):
             classfication_results[key] = value
         classfication_results = sorted(classfication_results.items(), key=lambda x: x[1], reverse=True)          #higher value indicates the spc function
         sps_funs = dict(classfication_results)
-        first_fun_value = list(sps_funs.values())[0]
         for key, value in sps_funs.items():
             if value >= 0.5:
                 if key not in sps_funs_keys:
                     sps_funs_keys.append(key)
 
-        # fusion
         for ff, value in sps_funs_in_test_file.items():
             sps_funs_in_test_file[ff] = 1 / total_number
 
@@ -238,6 +222,8 @@ def uncertain_inference(buggy_systems_folder):
             su_list.append(su_calculation(each_fun_su_list, result_list))
 
         arr_sps_funs_keys = softmax(arr_sps_funs_keys)
+
+        #Multi-source evidence fusion based on the Dempster Synthesis Rule
         type_fusion, fusion_result = fusion(arr_sps_funs_keys, arr_sps_funs_in_test_file, su_list)
 
         sps_funs_keys_new = []
@@ -252,22 +238,20 @@ def uncertain_inference(buggy_systems_folder):
             for i in range(0, len(fusion_result)):
                 if fusion_result[i] > 0:
                     sps_funs_keys_new.append([sps_funs_keys_set_intersection[i], fusion_result[i]])
-
         siling_data = {}
         for production in fail_productions:
-
             failed_production_path = join_path(variants_list_path, production)
             failed_coverage_path = join_path(failed_production_path, "coverage/failed")
-
             data = get_each_failed_test_coverage_inf(failed_coverage_path, sps_funs_keys_new, production, product_with_roles)
             if len(list(data.keys())) != 0:
                 siling_data[production] = data
         siling_data = json.dumps(siling_data)
+        print(mutated_project_name, "is finished!")
         times += 1
-
         siling_file_path = join_path(folder_path, "slicing_10.log")
         nf = open(siling_file_path, "w")
         try:
             nf.write(siling_data)
         finally:
             nf.close()
+    print("***********************************************")

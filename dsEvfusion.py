@@ -1,5 +1,4 @@
 import math
-
 import numpy as np
 
 from methods.mutual_information import su_calculation
@@ -29,7 +28,7 @@ def mul_evd_fusion(a, b):
     return list2
 
 
-def evd_fusion_with_FCLA_and_FCFLA(a, b):
+def evd_fusion_with_SBFL_and_FCFLA(a, b):
     m1 = np.array(a)
     m2 = np.array(b)
     k = 0
@@ -43,7 +42,7 @@ def evd_fusion_with_FCLA_and_FCFLA(a, b):
         res = res + m1[q] * m2[q]
         dis += abs(m1[q] - m2[q])
     k = k - res
-    if dis < 1.8:   #Email 1.8  BankTP 1.8 EXAMDB 1.8
+    if dis < 1.8:
         return a
     list = []
     for s in range(len(a)):
@@ -75,7 +74,6 @@ def fusion(a, b, c):
     k = k - res
 
     if k >= 0.98:
-        #冲突
         k2 = 0
         dis2 = 0
         for i in range(len(a)):
@@ -97,10 +95,7 @@ def fusion(a, b, c):
         for t in range(len(a)):
             P = list[t] / np.sum(list)
             list2.append(P)
-        print("Type 1 ", list2)
         return 1, list2
-
-    # without M2
 
     list = []
     for s in range(len(a)):
@@ -111,14 +106,7 @@ def fusion(a, b, c):
     for t in range(len(a)):
         P = list[t] / np.sum(list)
         list2.append(P)
-    print("Type 0 ", list2)
     return 0, mul_evd_fusion(list2, c)
-    # return 0, list2
-
-    # return result
-
-
-import numpy as np
 
 
 def softmax(x):
@@ -129,7 +117,6 @@ def softmax(x):
 
     return y
 
-from util.utils import get_new_SU
 
 def calculate_C_Relevance(f, C):
     return su_calculation(f, C)

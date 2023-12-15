@@ -9,7 +9,7 @@ from util.FileManager import join_path, get_slicing_log_file_path, get_variants_
     get_slicing_test_case_output_file_path
 
 
-def get_suspicious_statement_varcop(mutated_project_dir, postfix):         #postfix = filtering_coverage_rate = 0.1
+def get_suspicious_statement_fcfla(mutated_project_dir, postfix):         #postfix = filtering_coverage_rate = 0.1
     slicing_info_file_path = get_slicing_log_file_path(mutated_project_dir, postfix)
     failing_coverage_data = read_coverage_file(mutated_project_dir)   #data = {} ('featureClass') + "." + line.get('featureLineNum')
     #print("ddddd: ", isfile(slicing_info_file_path), slicing_info_file_path)

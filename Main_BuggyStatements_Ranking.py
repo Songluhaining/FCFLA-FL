@@ -8,6 +8,8 @@ from ranking.Spectrum_Expression import JACCARD, SORENSEN_DICE, TARANTULA, OCHIA
     SIMPLE_MATCHING, RUSSELL_RAO, COHEN, SCOTT, ROGOT1, GEOMETRIC_MEAN, M2, WONG1, SOKAL, DICE, HUMANN, ZOLTAR, \
     WONG2, ROGOT2, EUCLID, HAMMING, FLEISS, ANDERBERG, KULCZYNSKI2, HARMONIC_MEAN, GOODMAN
 
+
+
 if __name__ == "__main__":
     # parameter configuration
     system_name = "BankAccountTP"
@@ -22,7 +24,6 @@ if __name__ == "__main__":
     normalization = NORMALIZATION_ENABLE
     aggregation = AGGREGATION_ARITHMETIC_MEAN
     w = 0.5
-    # -----------------------
 
     #first part
     uncertain_inference(buggy_systems_folder)
